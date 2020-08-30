@@ -1,4 +1,4 @@
-from tkinter import PhotoImage
+from tkinter import Canvas, PhotoImage
 from tkinter.constants import *
 from cv2 import cv2
 import tkinter as tk
@@ -10,16 +10,16 @@ from io import BytesIO
 class Application():
     def __init__(self, root) -> None:
         self.root = root
-        #self.root.state('zoomed')
+        self.root.state('zoomed')
         self.main_frame = tk.Frame(self.root)
-        self.main_frame.grid(row=0, column=0, sticky=(N,W,E,S))
-        self.main_frame.grid_rowconfigure(0, weight=1)
-        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.pack(expand=True, fill=BOTH)
         
         self.top_frame = tk.Frame(self.main_frame, bg='red')
-        self.top_frame.pack(side=TOP, fill=X)
+        self.top_frame.pack(side=TOP, fill=BOTH)
         self.bottom_frame = tk.Frame(self.main_frame, bg='black')
-        self.bottom_frame.pack(side=BOTTOM, fill=X)
+        self.bottom_frame.pack(side=BOTTOM, fill=BOTH, expand=True)
+        self.bottom_frame.rowconfigure(0, weight=1)
+        self.bottom_frame.columnconfigure(0, weight=1)
         
         self.canvas = tk.Canvas(self.bottom_frame)
         self.vsb = tk.Scrollbar(self.bottom_frame, orient="vertical", command=self.canvas.yview)
@@ -33,12 +33,10 @@ class Application():
         )
         
         self.canvas.create_window((0,0), window=self.scrollFrame, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.vsb.set) 
         
-        self.canvas.configure(yscrollcommand=self.vsb.set)
-        
-        
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.vsb.pack(side="right", fill="y")
+        self.canvas.grid(row=0,column=0,sticky='nsew')
+        self.vsb.grid(row=0,column=1, sticky='nswe')
         
         self.state = False
         self.root.bind("<F11>", self.toggle_fullscreen)
@@ -77,14 +75,22 @@ class Application():
         database.insert(filename, im)
         
     def view(self):
+        #self.canvas.delete('all')
+        for widget in self.scrollFrame.winfo_children():
+            widget.pack_forget()
+        
+        print(self.main_frame.winfo_width())
+        print(self.main_frame.winfo_height())
+        
         for row in database.view():
             img = Image.open(BytesIO(row[2]))
-            img = img.resize((450, 500), Image.ANTIALIAS)
+            #print(root.geometry())
+            img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()), Image.ANTIALIAS)
             phimg = ImageTk.PhotoImage(img)
             
             self.pic = tk.Label(self.scrollFrame, image=phimg)
             self.pic.image = phimg
-            self.pic.pack()
+            self.pic.pack(fill=BOTH, expand=True, anchor=E)
 
         
 
