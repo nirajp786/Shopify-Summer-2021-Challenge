@@ -79,22 +79,16 @@ class Application():
         for widget in self.scrollFrame.winfo_children():
             widget.pack_forget()
         
-        print(self.main_frame.winfo_width())
-        print(self.main_frame.winfo_height())
-        
         for row in database.view():
             img = Image.open(BytesIO(row[2]))
-            #print(root.geometry())
             img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()), Image.ANTIALIAS)
             phimg = ImageTk.PhotoImage(img)
             
             self.pic = tk.Label(self.scrollFrame, image=phimg)
             self.pic.image = phimg
             self.pic.pack(fill=BOTH, expand=True, anchor=E)
-
-        
-
-
+    
+    
 if __name__ == "__main__":
     root = tk.Tk()
     database = Database()
