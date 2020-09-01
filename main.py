@@ -14,7 +14,7 @@ class Application():
         self.main_frame = tk.Frame(self.root)
         self.main_frame.pack(expand=True, fill=BOTH)
         
-        self.top_frame = tk.Frame(self.main_frame, bg='red')
+        self.top_frame = tk.Frame(self.main_frame, bg='gray46')
         self.top_frame.pack(side=TOP, fill=BOTH)
         self.bottom_frame = tk.Frame(self.main_frame, bg='black')
         self.bottom_frame.pack(side=BOTTOM, fill=BOTH, expand=True)
@@ -33,7 +33,7 @@ class Application():
         )
         
         self.canvas.create_window((0,0), window=self.scrollFrame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.vsb.set) 
+        self.canvas.configure(yscrollcommand=self.vsb.set)
         
         self.canvas.grid(row=0,column=0,sticky='nsew')
         self.vsb.grid(row=0,column=1, sticky='nswe')
@@ -41,6 +41,7 @@ class Application():
         self.state = False
         self.root.bind("<F11>", self.toggle_fullscreen)
         self.root.bind("<Escape>", self.end_fullscreen)
+        self.root.bind(sequence='<Button-3>', func=self.onObjectClick) 
         
         self.addPicBut = tk.Button(self.top_frame, text="Add Image", command=self.askopenfile)
         self.addPicBut.grid(row=0, column=0)
@@ -51,6 +52,8 @@ class Application():
         
         self.viewBut = tk.Button(self.top_frame, text="View", command=self.view)
         self.viewBut.grid(row=1, column=0)
+        
+        self.menuPic = tk.Menu
         
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -86,8 +89,15 @@ class Application():
             
             self.pic = tk.Label(self.scrollFrame, image=phimg)
             self.pic.image = phimg
+            #print((self.pic.image))
             self.pic.pack(fill=BOTH, expand=True, anchor=E)
-    
+            
+    def onObjectClick(self, event):
+        print("Clicked", event.x, event.y, event.y, event.widget)
+        print(type(event.widget))
+        if isinstance(event.widget, tk.Label):
+            print("HIHIHI")
+        
     
 if __name__ == "__main__":
     root = tk.Tk()
