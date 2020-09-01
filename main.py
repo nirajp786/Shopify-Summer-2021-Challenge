@@ -53,7 +53,10 @@ class Application():
         self.viewBut = tk.Button(self.top_frame, text="View", command=self.view)
         self.viewBut.grid(row=1, column=0)
         
-        self.menuPic = tk.Menu
+        self.menuPic = tk.Menu(self.scrollFrame, tearoff=0)
+        self.menuPic.add_command(label="Delete Picture")
+        self.menuPic.add_separator()
+        #TODO Add the menu for right click and add functionality for delete pic from server
         
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
