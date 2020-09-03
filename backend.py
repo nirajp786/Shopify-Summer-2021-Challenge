@@ -4,7 +4,7 @@ class Database():
     def __init__(self):
         con = sqlite3.connect("Image-Repository.db")
         cur = con.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS images(id INTEGER AUTO_INCREMENT, name TEXT, img BLOB, PRIMARY KEY(id))")
+        cur.execute("CREATE TABLE IF NOT EXISTS images(id INTEGER AUTO_INCREMENT PRIMARY KEY, name TEXT, img BLOB)")
         con.commit()
         con.close()
 

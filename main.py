@@ -9,6 +9,8 @@ from io import BytesIO
 
 class Application():
     def __init__(self, root) -> None:
+        self.pictures = set()
+        
         self.root = root
         self.root.state('zoomed')
         self.main_frame = tk.Frame(self.root)
@@ -51,12 +53,12 @@ class Application():
         self.fileLocEntry.grid(row=0, column=1, padx=10)
         
         self.viewBut = tk.Button(self.top_frame, text="View", command=self.view)
-        self.viewBut.grid(row=1, column=0)
+        self.viewBut.grid(row=1, column=0, sticky='nw')
         
         self.menuPic = tk.Menu(self.scrollFrame, tearoff=0)
-        self.menuPic.add_command(label="Delete Picture")
+        self.menuPic.add_command(label="Delete Picture", command=self.deletePic)
         self.menuPic.add_separator()
-        #TODO Add the menu for right click and add functionality for delete pic from server
+        self.menuPic.add_command(label="Exit Menu")
         
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -86,20 +88,34 @@ class Application():
             widget.pack_forget()
         
         for row in database.view():
+            picName = row[1]
             img = Image.open(BytesIO(row[2]))
             img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()), Image.ANTIALIAS)
             phimg = ImageTk.PhotoImage(img)
             
             self.pic = tk.Label(self.scrollFrame, image=phimg)
             self.pic.image = phimg
+            self.pic.text = picName
+            self.pictures.add(self.pic)
             #print((self.pic.image))
+            #print(self.pic.text)
+            print(type(self.pic))
             self.pic.pack(fill=BOTH, expand=True, anchor=E)
             
     def onObjectClick(self, event):
         print("Clicked", event.x, event.y, event.y, event.widget)
-        print(type(event.widget))
+        # print(type(event.widget))
+        self.caller = event
+        #print(caller.text)
+        #print(caller)
         if isinstance(event.widget, tk.Label):
-            print("HIHIHI")
+            try:
+                self.menuPic.tk_popup(event.x_root, event.y_root)
+            finally:
+                self.menuPic.grab_release()
+    
+    def deletePic(self):
+        print(self.caller.widget.text)
         
     
 if __name__ == "__main__":
