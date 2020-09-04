@@ -1,6 +1,4 @@
 import psycopg2
-
-
 class Database():
     connection_details = ""
     def __init__(self):
@@ -26,3 +24,10 @@ class Database():
         rows = cur.fetchall()
         con.close()
         return rows
+    
+    def delete(self, id):
+        con = psycopg2.connect(self.connection_details)
+        cur = con.cursor()
+        cur.execute("DELETE FROM images WHERE id=%s", (id,))
+        con.commit()
+        con.close()

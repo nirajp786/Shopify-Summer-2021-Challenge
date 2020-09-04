@@ -73,7 +73,7 @@ class Application():
     def askopenfile(self):
         self.fileLocStrVar.set("")
         from tkinter.filedialog import askopenfilename
-        filename_path = askopenfilename(title="Select Image", filetype=(("png files", "*.png"), ("jpg files", "*.jpg"), ("jpeg files", "*.jpeg")))
+        filename_path = askopenfilename(title="Select Image", filetype=[("Image files", ".png .jpg .jpeg")])
         self.fileLocStrVar.set(filename_path)
         self.insert(filename_path)
         
@@ -81,6 +81,7 @@ class Application():
         im = open(filename_path, "rb").read()
         filename = ntpath.basename(filename_path)
         database.insert(filename, im)
+        self.view()
         
     def view(self):
         #self.canvas.delete('all')
@@ -88,26 +89,25 @@ class Application():
             widget.pack_forget()
         
         for row in database.view():
-            picName = row[1]
+            picID = row[0]
+            picName = row[1][:row[1].find(".")]
+            picExtension = row[1][row[1].find(".")+1:]
+            picDetails = "({}, {}, {})".format(str(picID), picName, picExtension)
+            print(picID, picName, type(str(picID)), type(picName))
+            
             img = Image.open(BytesIO(row[2]))
-            img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()), Image.ANTIALIAS)
+            img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()-20), Image.ANTIALIAS)
             phimg = ImageTk.PhotoImage(img)
             
             self.pic = tk.Label(self.scrollFrame, image=phimg)
             self.pic.image = phimg
-            self.pic.text = picName
+            self.pic.text = picDetails
             self.pictures.add(self.pic)
-            #print((self.pic.image))
-            #print(self.pic.text)
-            print(type(self.pic))
             self.pic.pack(fill=BOTH, expand=True, anchor=E)
             
     def onObjectClick(self, event):
         print("Clicked", event.x, event.y, event.y, event.widget)
-        # print(type(event.widget))
         self.caller = event
-        #print(caller.text)
-        #print(caller)
         if isinstance(event.widget, tk.Label):
             try:
                 self.menuPic.tk_popup(event.x_root, event.y_root)
@@ -116,6 +116,10 @@ class Application():
     
     def deletePic(self):
         print(self.caller.widget.text)
+        print(type(self.caller.widget.text))
+        tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
+        database.delete(int(tup[0]))
+        self.view()
         
     
 if __name__ == "__main__":
