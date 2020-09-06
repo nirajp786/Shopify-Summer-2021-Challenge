@@ -1,6 +1,6 @@
 from tkinter import Canvas, PhotoImage
 from tkinter.constants import *
-from cv2 import cv2
+from tkinter.filedialog import askopenfilename
 import tkinter as tk
 from PIL import Image, ImageTk
 from backend import Database
@@ -57,6 +57,8 @@ class Application():
         
         self.menuPic = tk.Menu(self.scrollFrame, tearoff=0)
         self.menuPic.add_command(label="Delete Picture", command=self.deletePic)
+        self.menuPic.add_command(label="Update Picture", command=self.updatePic)
+        self.menuPic.add_command(label="Picture Detail", command=self.detailPic)
         self.menuPic.add_separator()
         self.menuPic.add_command(label="Exit Menu")
         
@@ -72,7 +74,6 @@ class Application():
     
     def askopenfile(self):
         self.fileLocStrVar.set("")
-        from tkinter.filedialog import askopenfilename
         filename_path = askopenfilename(title="Select Image", filetype=[("Image files", ".png .jpg .jpeg")])
         self.fileLocStrVar.set(filename_path)
         self.insert(filename_path)
@@ -92,9 +93,8 @@ class Application():
             picID = row[0]
             picName = row[1][:row[1].find(".")]
             picExtension = row[1][row[1].find(".")+1:]
-            picDetails = "({}, {}, {})".format(str(picID), picName, picExtension)
+            picDetails = "({}, {}, {}, {})".format(str(picID), picName, picExtension, row[3])
             print(picID, picName, type(str(picID)), type(picName))
-            
             img = Image.open(BytesIO(row[2]))
             img = img.resize((self.main_frame.winfo_width(), self.main_frame.winfo_height()-20), Image.ANTIALIAS)
             phimg = ImageTk.PhotoImage(img)
@@ -121,6 +121,16 @@ class Application():
         database.delete(int(tup[0]))
         self.view()
         
+    def updatePic(self):
+        tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
+        filename_path = askopenfilename(title="Select Image", filetype=[("Image files", ".png .jpg .jpeg")])
+        im = open(filename_path, "rb").read()
+        database.update(int(tup[0]), im)
+        self.view()
+    
+    def detailPic(self):
+        tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
+        print(tup[3])
     
 if __name__ == "__main__":
     root = tk.Tk()
