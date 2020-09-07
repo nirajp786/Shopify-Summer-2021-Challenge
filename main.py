@@ -90,7 +90,6 @@ class Application():
         self.menuPic = tk.Menu(self.scrollFrame, tearoff=0)
         self.menuPic.add_command(label="Delete Picture", command=self.deletePic)
         self.menuPic.add_command(label="Update Picture", command=self.updatePic)
-        self.menuPic.add_command(label="Picture Detail", command=self.detailPic)
         self.menuPic.add_separator()
         self.menuPic.add_command(label="Exit Menu")
         
@@ -163,11 +162,7 @@ class Application():
         im = open(filename_path, "rb").read()
         database.update(int(tup[0]), im)
         self.view()
-    
-    def detailPic(self):
-        tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
-        print(tup[3])
-    
+        
     def createtooltip(self, widget, text):
         tooltip = ToolTip(widget)
         def enter(event):
