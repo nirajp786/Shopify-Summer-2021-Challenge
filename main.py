@@ -7,6 +7,38 @@ from backend import Database
 import ntpath
 from io import BytesIO
 
+class ToolTip(object):
+    
+    def __init__(self, widget):
+        self.widget = widget
+        self.tipwindow = None
+        self.id = None
+        self.x = self.y = 0
+
+    def showtip(self, text, event):
+        "Display text in tooltip window"
+        self.text = text
+        if self.tipwindow or not self.text:
+            return
+        #x, y, cx, cy = self.widget.bbox("insert")
+        #x = x + self.widget.winfo_rootx() + 57
+        #y = y + cy + self.widget.winfo_rooty() +27
+        x = event.x_root
+        y = event.y_root
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(tw, text=self.text,
+                      background="gray46", foreground="white", relief=SOLID, borderwidth=1,
+                      font=("tahoma", "8", "normal"))
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tipwindow
+        self.tipwindow = None
+        if tw:
+            tw.destroy()
+
 class Application():
     def __init__(self, root) -> None:
         self.pictures = set()
@@ -105,6 +137,10 @@ class Application():
             self.pictures.add(self.pic)
             self.pic.pack(fill=BOTH, expand=True, anchor=E)
             
+            self.createtooltip(widget=self.pic, text=f'ID: {picID}\n'
+                                                        f'Picture Name: {picName}'+f'.{picExtension}\n'
+                                                        f'Date Added: {row[3]}')
+            
     def onObjectClick(self, event):
         print("Clicked", event.x, event.y, event.y, event.widget)
         self.caller = event
@@ -131,6 +167,16 @@ class Application():
     def detailPic(self):
         tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
         print(tup[3])
+    
+    def createtooltip(self, widget, text):
+        tooltip = ToolTip(widget)
+        def enter(event):
+            tooltip.showtip(text, event)
+        def leave(event):
+            tooltip.hidetip()
+        widget.bind('<Enter>', enter)
+        widget.bind("<Leave>", leave)
+        
     
 if __name__ == "__main__":
     root = tk.Tk()
