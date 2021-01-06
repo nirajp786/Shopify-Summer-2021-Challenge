@@ -150,8 +150,8 @@ class Application():
                 self.menuPic.grab_release()
     
     def deletePic(self):
-        print(self.caller.widget.text)
-        print(type(self.caller.widget.text))
+        #print(self.caller.widget.text)
+        #print(type(self.caller.widget.text))
         tup = tuple(str(word) for word in self.caller.widget.text.replace('(', '').replace(')', '').replace('...', '').split(', '))
         database.delete(int(tup[0]))
         self.view()

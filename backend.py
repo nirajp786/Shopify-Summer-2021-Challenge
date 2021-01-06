@@ -1,7 +1,7 @@
 import psycopg2
 import datetime
 class Database():
-    connection_details = ""
+    connection_details = "dbname='Shopify-Image-Repo' user='postgres' password='159753123Np!' host='localhost' port='5432'"
     def __init__(self):
         con = psycopg2.connect(self.connection_details)
         cur = con.cursor()
