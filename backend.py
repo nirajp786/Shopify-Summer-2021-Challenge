@@ -1,7 +1,15 @@
 import psycopg2
 import datetime
+import os
+from dotenv import load_dotenv
+from pathlib import Path
+
+env_path = Path('.') / '.env'
+
+load_dotenv(dotenv_path=env_path)
+
 class Database():
-    connection_details = "dbname='Shopify-Image-Repo' user='postgres' password='159753123Np!' host='localhost' port='5432'"
+    connection_details = "dbname="+os.getenv("DBNAME") + " user=" + os.getenv("USER") + " password=" +  os.getenv("PASSWORD") + " host=" + os.getenv("HOST") +  " port=" + os.getenv("PORT")
     def __init__(self):
         con = psycopg2.connect(self.connection_details)
         cur = con.cursor()
